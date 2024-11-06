@@ -114,7 +114,7 @@ utm <- function(x){
 #' we <- countries("Western Europe")
 #' towns(we, size = 1E06, capital = TRUE)
 towns <- function(x, size = NULL, capital = FALSE, crs = NULL, shift = FALSE){
-    .towns <- countries::ne_towns
+    .towns <- necountries::ne_towns
     if (! inherits(x, "sf")){
         x <- countries(x)
     }
@@ -207,7 +207,7 @@ countries <- function(name = NA, part = FALSE, dependency = FALSE,
         if (! .lang %in% c("en", "fr", "it", "es")) stop("unknown language")
     }
     ne_lands <- ne_lands %>% st_geometry
-    .countries <- countries::ne_countries
+    .countries <- necountries::ne_countries
     .name <- name
     .utm <- utm
     .crs <- crs
