@@ -2,11 +2,15 @@
 % Please edit documentation in R/functions.R
 \name{dplyr.methods}
 \alias{dplyr.methods}
-\alias{left_join.countries}
 \alias{check_join}
 \alias{select.countries}
+\alias{left_join.countries}
 \title{Methods for \code{dplyr}'s verbs}
 \usage{
+check_join(x, y, by = NULL, side = c("right", "both", "left"))
+
+\method{select}{countries}(.data, ...)
+
 \method{left_join}{countries}(
   x,
   y,
@@ -16,19 +20,18 @@
   ...,
   keep = NULL
 )
-
-check_join(x, y, by = NULL, side = c("right", "both", "left"))
-
-\method{select}{countries}(.data, ...)
 }
 \arguments{
 \item{x, y, by, copy, suffix, keep}{see \code{dplyr::left_join}}
 
-\item{\dots}{further arguments}
-
 \item{side}{for the \code{check_join} function}
 
 \item{.data}{see \code{dplyr::select}}
+
+\item{\dots}{further arguments}
+}
+\value{
+for the \code{select} and the \code{left_join} method, a data frame
 }
 \description{
 \code{countries}' objects inherits from \code{sf}, when a verb of \code{dlpyr} is

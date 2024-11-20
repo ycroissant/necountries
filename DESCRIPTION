@@ -1,20 +1,22 @@
 Package: necountries
-Version: 0.1-1
-Date: 2024-11-06
+Version: 0.1-2
+Date: 2024-11-20
 Title: Countries of the World
 Authors@R: c(person("Yves", "Croissant", role = c("aut", "cre"), email = "yves.croissant@univ-reunion.fr", comment = c(ORCID = "0000-0002-4857-7736")))
 Depends: R (>= 4.0.0)
 Imports: Rdpack, tibble, ggplot2, sf, dplyr, ggrepel, rlang, classInt, stringr, magrittr, stringi
-Description: Maps for subsets of countries of the world. Based on naturalearth.
+Description: Based on Natural Earth <https://www.naturalearthdata.com/>, a subset of countries can
+             easily be selected with their administrative boundaries, joined with an external
+	     data frame and plotted as a thematic map.
 License: GPL (>=2)
 Encoding: UTF-8
 URL: https://www.R-project.org
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 Author: Yves Croissant [aut, cre] (<https://orcid.org/0000-0002-4857-7736>)
 Maintainer: Yves Croissant <yves.croissant@univ-reunion.fr>
 LazyData: true
 NeedsCompilation: no
-Suggests: knitr, rmarkdown, tidyr, purrr
-VignetteBuilder: knitr
+Suggests: knitr, tidyr, purrr, quarto
+VignetteBuilder: quarto
 RdMacros: Rdpack

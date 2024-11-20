@@ -34,12 +34,12 @@ a tibble containing:
 }
 }
 \source{
-Nathan Nunn's website \url{http://scholar.harvard.edu/nunn}
+Nathan Nunn's website \url{https://nathannunn.arts.ubc.ca/}
 }
 \description{
 a cross-section of 52 countries from 2000
 }
 \references{
-\insertRef{NUNN:08}{countries}
+\insertRef{NUNN:08}{necountries}
 }
 \keyword{dataset}

@@ -67,17 +67,22 @@ transformed correctly if utm transformation is required}
 }
 \value{
 an object of class \code{countries} which inherits from \code{sf}
-with the following columns: - \code{id} the two letters identifier
-of the country, - \code{type} either \code{"main"} (the main part of a
-sovereign country, the whole country for most of them) -
-\code{country} the name of the entity, - \code{sovereign} the sovereign
-country the entity belongs to, - \code{capital} the name of the
-capital of the country (NA for parts and dependencies) -
-\code{subregion} the name of the subregion (United Nations'
-definition) - \code{pop} the population of the entity, - \code{gdp}
-currently undocumented - \code{wbreg} the name of the region (World
-Bank's definition) - \code{region} the name of the region (United
-Nations' definition) Two attributes \code{"type"} and \code{"towns"}
+with the following columns:
+\itemize{
+\item \code{id} the two letters identifier of the country,
+\item \code{type} either \code{"main"} (the main part of a sovereign country, the
+whole country for most of them) - \code{country} the name of the
+entity,
+\item \code{sovereign} the sovereign country the entity belongs to,
+\item \code{capital} the name of the capital of the country (NA for parts
+and dependencies) - \code{subregion} the name of the subregion
+(United Nations' definition)
+\item \code{pop} the population of the entity,
+\item \code{gdp} currently undocumented
+\item \code{wbreg} the name of the region (World Bank's definition)
+\item \code{region} the name of the region (United Nations' definition) Two
+attributes \code{"type"} and \code{"towns"}
+}
 }
 \description{
 Select a set of countries; talking about countries, we mean either

@@ -76,9 +76,9 @@ NULL
 #' - indian: distance to the indian ocean
 #' - redsea: distance to the red sea
 #' - sahara: distance to sahara
-#' @source Nathan Nunn's website \url{http://scholar.harvard.edu/nunn}
+#' @source Nathan Nunn's website \url{https://nathannunn.arts.ubc.ca/}
 #' @references
-#' \insertRef{NUNN:08}{countries}
+#' \insertRef{NUNN:08}{necountries}
 #' @importFrom Rdpack reprompt
 NULL
 
@@ -96,6 +96,6 @@ NULL
 #' - labgwth: growth rate of the labor force
 #' @source JAE data archive
 #' @references
-#' \insertRef{ERTU:KOCH:07}{countries}
+#' \insertRef{ERTU:KOCH:07}{necountries}
 #' @importFrom Rdpack reprompt
 NULL

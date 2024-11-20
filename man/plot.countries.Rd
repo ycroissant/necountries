@@ -11,11 +11,16 @@
   fill = NULL,
   capital = NULL,
   centroid = NULL,
+  towns = NULL,
   bks = NULL,
   n = 6,
+  size = c(1, 10),
+  shape = c(15, 16),
   style = NULL,
   palette = NULL,
-  bw = FALSE
+  bw = FALSE,
+  oceans = "lightblue",
+  background = "lightgrey"
 )
 }
 \arguments{
@@ -28,17 +33,30 @@ should be labeled: \code{country}, \code{capital} and/or \code{towns}}
 
 \item{fill}{a variable use to fill countries' polygons}
 
-\item{capital, centroid}{a variable associated with the shape or the
-size of points}
+\item{capital, centroid, towns}{a variable associated with the shape
+or the size of points; for towns, the only available variable
+is "pop", it town is a boolean fixed points are used with a
+specific shape for capitals if shape is of length 2}
 
 \item{bks}{an optional vector of breaks in order to use a
 continuous variable for fill}
 
 \item{n}{the number of class (passed to \code{classIntervals})}
 
+\item{size}{either an integer for a fixed size or a couple of
+integer to define the range of the sizes of the points}
+
+\item{shape}{either one integer for a fixed shape or a couple of
+integer to get a specific shape for capitals}
+
 \item{style}{the style (passed to \code{classIntervals})}
 
 \item{palette}{the palette (selected in \code{scale_fill_brewer})}
+
+\item{bw}{a boolean, if \code{TRUE}, a black and white map is produced}
+
+\item{oceans, background}{a character indicating the color for the
+oceans and the background}
 }
 \value{
 a \code{gg} object.

@@ -22,6 +22,6 @@ JAE data archive
 a cross-section of 91 countries from 1995
 }
 \references{
-\insertRef{ERTU:KOCH:07}{countries}
+\insertRef{ERTU:KOCH:07}{necountries}
 }
 \keyword{dataset}

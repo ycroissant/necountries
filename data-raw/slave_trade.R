@@ -19,7 +19,7 @@ slave_trade <- haven::read_dta("../inst/extdata/slave_trade_QJE.dta") %>%
               legor =  factor(legor_fr + 2 * legor_uk, labels = c("french", "british")),
               gdp   = round(exp(ln_maddison_pcgdp2000)),
               slaves = round(exp(ln_export_area) * area / 1E03, 3),
-              lslavesarea = ln_export_area,
+              slavesarea = exp(ln_export_area),
               humidmax = humid_max,
               rainmin = rain_min,
               lowtemp = low_temp,

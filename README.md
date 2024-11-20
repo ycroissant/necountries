@@ -1,4 +1,4 @@
-**countries** is a small package that performs three tasks:
+**necountries** is a small package that performs three tasks:
 
 - constructing a `sf` with a relevant subset of countries,
 - joining this `sf` with a tibble,

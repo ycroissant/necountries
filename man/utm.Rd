@@ -11,9 +11,11 @@ utm(x)
 }
 \value{
 a character string
+
+a character (a crs i, the 'proj4string' format)
 }
 \description{
-\code{utm} returns the relevant UTM crs (in the proj4string form)
+\code{utm} returns the relevant UTM crs (in the 'proj4string' form)
 }
 \details{
 There is one utm projections for each of the 60 zones that divide

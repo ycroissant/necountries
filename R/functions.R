@@ -1,5 +1,19 @@
 #library(sf);library(tidyverse);sf_use_s2(FALSE);load("./R/sysdata.rda");library(classInt);load("./data/ne_countries.rda");load("./data/ne_towns.rda");load("./data/slave_trade.rda");load("./data/sp_solow.rda");library(ggrepel);load("./R/sysdata.rda")
 
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%` 
+
+
+#' @importFrom dplyr left_join
+#' @export
+dplyr::left_join
+
+#' @importFrom dplyr select
+#' @export
+dplyr::select
+
+
 extend_bbox <- function(x, scale = 2){
     if (length(scale) == 2){
         .xscale <- scale[1]
@@ -54,7 +68,7 @@ bb_bbox_N <- function(x, N = 10){
 
 #' Universal Transverse Mercator projection
 #'
-#' `utm` returns the relevant UTM crs (in the proj4string form)
+#' `utm` returns the relevant UTM crs (in the 'proj4string' form)
 #'
 #' There is one utm projections for each of the 60 zones that divide
 #' the world. The zone can be indicated as an integer (ie 12L, and not
@@ -65,6 +79,7 @@ bb_bbox_N <- function(x, N = 10){
 #' @return a character string
 #' @importFrom sf st_bbox
 #' @importFrom rlang .data
+#' @return a character (a crs i, the 'proj4string' format)
 #' @export
 #' @examples
 #' we <- countries("Western Europe")
@@ -167,17 +182,20 @@ towns <- function(x, size = NULL, capital = FALSE, crs = NULL, shift = FALSE){
 #' @param shift a boolean, if `TRUE`, `st_shift_longitude` is used
 #' @param coastlines a boolean, `TRUE` to get the background coastines
 #' @return an object of class `countries` which inherits from `sf`
-#'     with the following columns: - `id` the two letters identifier
-#'     of the country, - `type` either `"main"` (the main part of a
-#'     sovereign country, the whole country for most of them) -
-#'     `country` the name of the entity, - `sovereign` the sovereign
-#'     country the entity belongs to, - `capital` the name of the
-#'     capital of the country (NA for parts and dependencies) -
-#'     `subregion` the name of the subregion (United Nations'
-#'     definition) - `pop` the population of the entity, - `gdp`
-#'     currently undocumented - `wbreg` the name of the region (World
-#'     Bank's definition) - `region` the name of the region (United
-#'     Nations' definition) Two attributes `"type"` and `"towns"`
+#'     with the following columns:
+#' - `id` the two letters identifier of the country,
+#' - `type` either `"main"` (the main part of a sovereign country, the
+#'     whole country for most of them) - `country` the name of the
+#'     entity,
+#' - `sovereign` the sovereign country the entity belongs to,
+#' - `capital` the name of the capital of the country (NA for parts
+#'     and dependencies) - `subregion` the name of the subregion
+#'     (United Nations' definition)
+#' - `pop` the population of the entity,
+#' - `gdp` currently undocumented
+#' - `wbreg` the name of the region (World Bank's definition)
+#' - `region` the name of the region (United Nations' definition) Two
+#'     attributes `"type"` and `"towns"`
 #' @importFrom dplyr pull filter mutate distinct
 #' @importFrom sf st_transform st_polygon st_sfc st_crs st_crop
 #'     st_intersection sf_use_s2
@@ -186,13 +204,19 @@ towns <- function(x, size = NULL, capital = FALSE, crs = NULL, shift = FALSE){
 #' @export
 #' @examples
 #' countries("Western Europe")
-countries <- function(name = NA, part = FALSE, dependency = FALSE,
+countries <- function(name = NA,
+                      part = FALSE,
+                      dependency = FALSE,
                       indeterminate = FALSE,
-                      exclude = NULL, include = NULL, 
-                      utm = FALSE, crs = NULL, 
-                      towns = FALSE, capital = FALSE,
+                      exclude = NULL,
+                      include = NULL, 
+                      utm = FALSE,
+                      crs = NULL, 
+                      towns = FALSE,
+                      capital = FALSE,
                       lang = NULL,
-                      extend = 1, shift = FALSE,
+                      extend = 1,
+                      shift = FALSE,
                       coastlines = TRUE){
     if (is.numeric(towns)){
         .size <- towns
@@ -375,34 +399,55 @@ labels.countries <- function(object, ..., var){
 #' @param labels a character vector containing the variables that
 #'     should be labeled: `country`, `capital` and/or `towns`
 #' @param fill a variable use to fill countries' polygons
-#' @param capital,centroid a variable associated with the shape or the
-#'     size of points
+#' @param capital,centroid,towns a variable associated with the shape
+#'     or the size of points; for towns, the only available variable
+#'     is "pop", it town is a boolean fixed points are used with a
+#'     specific shape for capitals if shape is of length 2
 #' @param bks an optional vector of breaks in order to use a
 #'     continuous variable for fill
 #' @param n the number of class (passed to `classIntervals`)
+#' @param size either an integer for a fixed size or a couple of
+#'     integer to define the range of the sizes of the points
+#' @param shape either one integer for a fixed shape or a couple of
+#'     integer to get a specific shape for capitals
 #' @param style the style (passed to `classIntervals`)
 #' @param palette the palette (selected in `scale_fill_brewer`)
 #' @param bw a boolean, if `TRUE`, a black and white map is produced
+#' @param oceans,background a character indicating the color for the
+#'     oceans and the background
 #' @return a `gg` object.
 #' @importFrom sf st_set_geometry
 #' @importFrom ggplot2 ggplot aes geom_sf scale_fill_brewer guides
-#'     scale_shape_manual
+#'     scale_shape_manual scale_size labs
 #' @importFrom ggrepel geom_label_repel
 #' @examples
 #' we <- countries("Western Europe")
 #' plot(we)
 #' @export
-plot.countries <- function(x, ...,
+plot.countries <- function(x,
+                           ...,
                            labels = NULL,
                            fill = NULL,
                            capital = NULL,
                            centroid = NULL,
+                           towns = NULL,
                            bks = NULL,
                            n = 6,
+                           size = c(1, 10),
+                           shape = c(15, 16),
                            style = NULL,
                            palette = NULL,
-                           bw = FALSE){
+                           bw = FALSE,
+                           oceans = "lightblue",
+                           background = "lightgrey"){
+    
+    # if bw is TRUE, a black and white map is drawn with white seas
+    # and a Greys palette
+    # oceans defines the color of the oceans, by default lightblue
+    
     if (bw & is.null(palette)) palette <- "Greys"
+    .oceans <- oceans
+    .background <- background
     .bg <- attr(x, "bg")
     .bb <- attr(x, "bb")
     .type <- attr(x, "type")
@@ -410,6 +455,40 @@ plot.countries <- function(x, ...,
     .fill <- fill
     .capital <- capital
     .centroid <- centroid
+    .plot_towns <- towns
+    .shape <- shape
+    .size <- size
+
+    # check the value of .plot_towns, either a logical or "pop"
+    if (! is.null(.plot_towns)){
+        if (is.character(.plot_towns)){
+            if (.plot_towns != "pop"){
+                stop("currently only pop can be mapped to the size of the points representing the towns")
+            }
+        }
+        else{
+            if (! is.logical(.plot_towns)){
+                stop("towns should either be a logical or 'pop'")
+            }
+            else{
+                if (! .plot_towns) .plot_towns <- NULL
+            }
+        }
+    }
+
+    # .plot_towns is now either NULL, "pop" or TRUE
+    # size is a numeric of length 1 only if towns are plotted only if
+    # .plot_towns = TRUE, otherwise it should be of length 2
+    if (length(.size) > 2) stop("size should be of length 1 or 2")
+    if ((! is.null(.plot_towns) && is.logical(.plot_towns))){
+        if (length(.size) > 1) .size <- .size[1]
+    }
+    if ((! is.null(.plot_towns) && is.character(.plot_towns))){
+        if (length(.size) == 1)
+            stop("size should be of length 2")
+    }
+                
+    # .point is the variable that maps either the capital or the centroid
     if (! is.null(.capital) & ! is.null(.centroid))
         stop("only one of capital and centroid should be set")
     if (is.null(.capital) & is.null(.centroid)) .point <- NULL
@@ -418,6 +497,10 @@ plot.countries <- function(x, ...,
         .point <- .centroid
         x$point <- x %>% st_geometry %>% st_point_on_surface
     }
+
+    if (! is.null(.plot_towns) & ! is.null(.point))
+        stop("non-capital towns can't be plotted if capitals or centroids are mapped with a variable")
+
     
     .palette <- palette
     .bks <- bks
@@ -427,18 +510,20 @@ plot.countries <- function(x, ...,
     seq_palettes <- c("Blues", "BuGn", "BuPu", "GnBu", "Greens", "Greys", "Oranges",
                       "OrRd", "PuBu", "PuBuGn", "PuRd", "Purples", "RdPu", "Reds", "YlGn",
                       "YlGnBu", "YlOrBr", "YlOrRd")
-    div_palettes <- c("BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral")
+    div_palettes <- c("BrBG", "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu",
+                      "RdYlGn", "Spectral")
     if (is.null(.style)) .style <- "pretty"
     if (! is.null(.fill) && ! .fill %in% names(x)) stop("fill unknown")    
     if (is.null(.labels)) .labels <- "none"
     if (length(setdiff(.labels, c("none", "country", "towns", "capital"))) > 0)
         stop("irrelevant value for labels")
+
     # create the plot with relevant fill
-    fill_oceans <- ifelse(bw, "white", "lightblue")
+    fill_oceans <- ifelse(bw, "white", .oceans)
     aplot <- .bb %>%
         ggplot +
         geom_sf(fill = fill_oceans)
-    if (! is.null(.bg)) aplot <- aplot + geom_sf(data = .bg)
+    if (! is.null(.bg)) aplot <- aplot + geom_sf(data = .bg, fill = .background)
 
     if (! is.null(.fill)){
         if (! .fill %in% names(x)) stop("unkown variable for fill")
@@ -450,7 +535,7 @@ plot.countries <- function(x, ...,
                 scale_fill_brewer(palette = .palette, na.translate = FALSE) #+ guides(fill = FALSE)
         }
         else {
-        # fill: quantitative values
+            # fill: quantitative values
             if (is.null(.bks)){
                 .bks <- classIntervals(x[[.fill]], .n, style = .style)$brks
             }
@@ -459,43 +544,72 @@ plot.countries <- function(x, ...,
             else if (! .palette %in% c(seq_palettes, div_palettes))
                 stop("a sequential or divergent palette should be used")
             aplot <- aplot + geom_sf(data = x, aes(fill = .data[[.fill]])) +
-                scale_fill_brewer(palette = .palette, na.translate = FALSE, na.value = "red") #+ guides(fill = FALSE)
+                scale_fill_brewer(palette = .palette, na.translate = FALSE, na.value = "red")
+                #+ guides(fill = FALSE)
         }
     }
     else aplot <- aplot + geom_sf(data = x)
 
-    # si towns présent trace les villes
-
-    # si capital est pas nul vire capital
-    # si capital = variable numérique, vire les tailles de towns
-
-    plot_towns <- ! is.null(attr(x, "towns"))
+    # Towns are plot if there are present and if there is no mapping
+    # with capitals or centroid
+    # plot_towns <- ! is.null(attr(x, "towns")) now towns plotted only if capital/centroid = NULL
+    plot_towns <- ! is.null(attr(x, "towns")) & is.null(.point)
     if (plot_towns) .towns <- attr(x, "towns")
 
+    # If a variable is mapped to capitals or centroids, use different
+    # sizes (numerical) or shapes (categorical) variables
     if (! is.null(.point)){
         point_is_numeric <- is.numeric(x[[.point]])
         if (point_is_numeric){
             aplot <- aplot +
-                geom_sf(data = st_set_geometry(x, "point"), aes(size = .data[[.point]]))
+                geom_sf(data = st_set_geometry(x, "point"),
+                        shape = .shape[1], aes(size = .data[[.point]]))
         }
         else{
             aplot <- aplot +
-                geom_sf(data = st_set_geometry(x, "point"), aes(shape = .data[[.point]]))
+                geom_sf(data = st_set_geometry(x, "point"),
+                        size = .size[1], aes(shape = .data[[.point]]))
         }
-        if (plot_towns){
-            .towns <- filter(.towns, ! capital)
-            aplot <- aplot + geom_sf(data = .towns, shape = 15)
+        ## if (plot_towns){
+        ##     .towns <- filter(.towns, ! capital)
+        ##     aplot <- aplot + geom_sf(data = .towns, shape = 15)
+        ## }
+    }
+    if (! is.null(.plot_towns)){
+        .towns_data <- attr(x, "towns")
+        if (is.character(.plot_towns)){
+            if (length(.shape) == 2){
+                aplot <- aplot +
+                    geom_sf(data = .towns_data,
+                            aes(shape = capital, size = .data$pop)) + 
+                    scale_shape_manual(values = .shape) +
+                    scale_size(range = .size) + 
+                    guides(shape = "none") +
+                    labs(size = "population")
+            }
+            else{
+                aplot <- aplot +
+                    geom_sf(data = .towns_data, shape = .shape,
+                            aes(size = .data$pop)) + 
+                    scale_size(range = .size) + 
+                    labs(size = "population")
+            }
+        }
+        else{
+            if (length(.shape) == 2){
+                aplot <- aplot +
+                    geom_sf(data = .towns_data, size = .size,
+                            aes(shape = capital)) + 
+                    scale_shape_manual(values = .shape) + 
+                    guides(shape = "none")
+            }
+            else{
+                aplot <- aplot +
+                    geom_sf(data = .towns_data, size = .size, shape = .shape)
+            }
         }
     }
-    else{     
-        # get towns if required
-        if (plot_towns){
-            aplot <- aplot +
-                geom_sf(data = .towns, aes(shape = .data$capital, size = .data$pop)) +
-                scale_shape_manual(values = c(16, 15)) + 
-                guides(size = "none", shape = "none")
-        }
-    }
+
     if (.labels[1] != "none"){
         .labels <- labels(x, var = .labels)
         aplot <- aplot + 
@@ -520,42 +634,11 @@ plot.countries <- function(x, ...,
 #' @param .data see `dplyr::select`
 #' @param side for the `check_join` function
 #' @param \dots further arguments
+#' @return for the `select` and the `left_join` method, a data frame
 #' @importFrom dplyr left_join select
 #' @importFrom stringr str_wrap
 NULL
 
-#' @rdname dplyr.methods
-#' @importFrom dplyr left_join
-#' @export
-left_join.countries <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ..., keep = NULL){
-    .x <- x
-    .by <- by
-    if (is.null(.by)) .by <- names(y)[1]
-    else if (is.numeric(.by)) .by <- names(y)[.by]
-    .code <- y[[.by]]
-    if (! is.character(.code) & ! is.factor(.code)) stop("The jointing variable should be a character or a factor")
-    if (is.factor(.code)) y[[.by]] <- .code <- as.character(.code)
-    if (all(nchar(.code) == 2) | all(nchar(.code) == 3)){
-        if (all(nchar(.code) == 2)){
-            .x_join <- "iso2"
-            message("Joining by iso2")
-        }
-        if (all(nchar(.code) == 3)){
-            .x_join <- "iso3"
-            message("Joining by iso3")
-        }
-    }
-    else{
-        .x_join <- "country"
-        message("Joining by countries' names")
-    }
-    class(.x) <- setdiff(class(.x), "countries")
-    .join <- .by
-    names(.join) <- .x_join
-    .x <- .x %>% left_join(y, by = .join, copy = FALSE, suffix = c(".x", ".y"), ..., keep = NULL)
-    class(.x) <- c("countries", class(.x))
-    .x
-}
 
 #' @rdname dplyr.methods
 #' @export
@@ -613,15 +696,35 @@ select.countries <- function(.data, ...){
     .data
 }
 
-#' @importFrom magrittr %>%
-#' @export
-magrittr::`%>%` 
-
-
+#' @rdname dplyr.methods
 #' @importFrom dplyr left_join
 #' @export
-dplyr::left_join
-
-#' @importFrom dplyr select
-#' @export
-dplyr::select
+left_join.countries <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ..., keep = NULL){
+    .x <- x
+    .by <- by
+    if (is.null(.by)) .by <- names(y)[1]
+    else if (is.numeric(.by)) .by <- names(y)[.by]
+    .code <- y[[.by]]
+    if (! is.character(.code) & ! is.factor(.code)) stop("The jointing variable should be a character or a factor")
+    if (is.factor(.code)) y[[.by]] <- .code <- as.character(.code)
+    if (all(nchar(.code) == 2) | all(nchar(.code) == 3)){
+        if (all(nchar(.code) == 2)){
+            .x_join <- "iso2"
+            message("Joining by iso2")
+        }
+        if (all(nchar(.code) == 3)){
+            .x_join <- "iso3"
+            message("Joining by iso3")
+        }
+    }
+    else{
+        .x_join <- "country"
+        message("Joining by countries' names")
+    }
+    class(.x) <- setdiff(class(.x), "countries")
+    .join <- .by
+    names(.join) <- .x_join
+    .x <- .x %>% left_join(y, by = .join, copy = FALSE, suffix = c(".x", ".y"), ..., keep = NULL)
+    class(.x) <- c("countries", class(.x))
+    .x
+}
